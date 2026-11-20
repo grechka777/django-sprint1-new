@@ -45,6 +45,9 @@ posts = [
 ]
 
 
+posts_by_id = {post['id']: post for post in posts}
+
+
 def index(request):
     template_name = 'blog/index.html'
     context = {'post': posts[::-1]}
@@ -52,22 +55,17 @@ def index(request):
 
 
 def post_detail(request, id):
-    post = None
-    for p in posts:
-        if p['id'] == id:
-            post = p
-            break
-    if not post:
+    template_name = 'blog/detail.html'
+    post = posts_by_id.get(id)
+    if post is None:
         raise Http404("Публикация не найдена")
     context = {'post': post}
-    return render(request, 'blog/detail.html', context)
+    return render(request, template_name, context)
 
 
 def category_posts(request, category_slug):
-    filtered_posts = [p for p in posts if p['category'] == category_slug]
+    template_name = 'blog/category.html'
     context = {
-        'posts': filtered_posts,
         'category_slug': category_slug
     }
-    template_name = 'blog/category.html'
     return render(request, template_name, context)
